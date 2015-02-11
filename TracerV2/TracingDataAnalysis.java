@@ -7,6 +7,7 @@ import org.math.R.Rsession;
 import org.rosuda.REngine.REXPMismatchException;
 
 
+
 public class TracingDataAnalysis {
 	private Vector<TracingLayer> sampleLayers;
 	private Vector<Vector<Point>> samples;
@@ -14,6 +15,8 @@ public class TracingDataAnalysis {
 	private int totalSamples;
 	Vector<Vector<Double>> disctancsByGroups;
 	private Rsession Rserver;
+	private float estimateError;
+	
 	public TracingDataAnalysis(){
 		this.sampleLayers = new Vector<TracingLayer>();
 		this.disctancsByGroups = new Vector<Vector<Double>>();
@@ -21,6 +24,7 @@ public class TracingDataAnalysis {
 		this.Rserver = Rsession.newInstanceTry(System.out,null);
 		averageCenterPoint = new Point();
 		totalSamples = 0;
+		estimateError = 0;
 	}
 	
 	public void addLayer(TracingLayer tempLayer){
@@ -37,12 +41,20 @@ public class TracingDataAnalysis {
 	}
 	
 	
+	
+	/**
+	 * Disconnect With R
+	 */
 	public void disConnectR(){
 		this.Rserver.end();
 	}
 	
 
-	
+	/**
+	 * Init the R data set And enable For MANOVA Test
+	 * @return
+	 * @throws REXPMismatchException
+	 */
 	public String initData() throws REXPMismatchException {
 		System.out.println("Number of Tests:"+ this.samples.size() );
 		System.out.println("Number of Samples:"+ this.totalSamples );
@@ -59,25 +71,67 @@ public class TracingDataAnalysis {
 				k++;
 			}
 		}
-		 
+		
+		float totalCompareResult = 0;
+		float maxResult = 0;
+		float minResult = -1;
+		Vector<Float> totalDistanceList = new Vector<Float>();
+		for (int i = 0 ; i < this.samples.size() ; i++){
+			for(int j = 0 ; j < this.samples.size() ; j++){
+				if (i != j){
+//					float result = (this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(i), this.samples.get(j)	));
+//					System.out.println(":"+result);
+//					totalCompareResult+= result;
+//					if(maxResult < result){
+//						maxResult = result;
+//					}
+//					if(minResult > result || minResult == -1){
+//						minResult = result;
+//					}
+					totalDistanceList.addAll(this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(i), this.samples.get(j)));
+				}
+			}
+		}
+		
+		System.out.println(totalDistanceList.toString());
+		double[] RDistanceSet = new double[totalDistanceList.size()];
+		for (int i = 0 ; i < totalDistanceList.size(); i++){
+			RDistanceSet[i] = totalDistanceList.get(i);
+		}
+		
+		Rserver.set("df", RDistanceSet);
+		
+		for(float dis : totalDistanceList){
+			System.out.println(dis);
+		}
+		
+		
+		
+		//Rserver.eval("x")
+		return "Posbility=:\n"+"MAX:"+maxResult+"\nMIN:"+minResult+"\nMean:"+totalCompareResult/(this.samples.size()*(this.samples.size()-1));
+		
+		
 		//Test R 
 		//Rsession s = Rsession.newInstanceTry(System.out,null);
-		Rserver.set("df", RdataSet, "x", "y", "g");
-		Rserver.eval("y<-as.matrix(df[,1:2])");
-		//s.eval("factor=df[,3]");
-		Rserver.eval("Group<-as.factor(df[,3])");
-		Rserver.eval("result<-manova(y~Group)");
-		String resultForWilks = Rserver.asString("summary.manova(result,test=c('Wilks'))");
-		String resultForPillai = Rserver.asString("summary.manova(result,test=c('Pillai'))");
-		String resultForHotelling = Rserver.asString("summary.manova(result,test=c('Hotelling-Lawley'))");
-		String resultForRoy = Rserver.asString("summary.manova(result,test=c('Roy'))");
-		String txt = resultForWilks + "\n" + resultForPillai + "\n" + resultForHotelling + "\n" + resultForRoy;
-        System.out.println(txt);
-        this.averageCenterPoint = this.returnAverageCenterPoint();
-        return txt+"\n"+this.averageCenterPoint.toString();
+//		Rserver.set("df", RdataSet, "x", "y", "g");
+//		Rserver.eval("y<-as.matrix(df[,1:2])");
+//		//s.eval("factor=df[,3]");
+//		Rserver.eval("Group<-as.factor(df[,3])");
+//		Rserver.eval("result<-manova(y~Group)");
+//		String resultForWilks = Rserver.asString("summary.manova(result,test=c('Wilks'))");
+//		String resultForPillai = Rserver.asString("summary.manova(result,test=c('Pillai'))");
+//		String resultForHotelling = Rserver.asString("summary.manova(result,test=c('Hotelling-Lawley'))");
+//		String resultForRoy = Rserver.asString("summary.manova(result,test=c('Roy'))");
+//		String txt = resultForWilks + "\n" + resultForPillai + "\n" + resultForHotelling + "\n" + resultForRoy;
+//        System.out.println(txt);
+//        this.averageCenterPoint = this.returnAverageCenterPoint();
+//        return txt+"\n"+this.averageCenterPoint.toString();
 	}
 	
-	//Calculate The Average Point
+	/**
+	 * Calculate The Average Point
+	 * @return
+	 */
 	public Point returnAverageCenterPoint(){
 		Point centerAveragePoint = new Point();
 		try {
@@ -91,7 +145,11 @@ public class TracingDataAnalysis {
 		return centerAveragePoint;
 	}
 	
-	//Split the data according to the given degree to number of group arrays
+	/**
+	 * Split the data according to the given degree to number of group arrays
+	 * @param degree
+	 * @return
+	 */
 	public Vector<Vector<Point>> splitThePointsByDegree(double degree){
 		int numGroup = (int) (360.0/degree);
 //		Vector<Integer> specPointIndex = new Vector<Integer>();
@@ -127,6 +185,11 @@ public class TracingDataAnalysis {
 		return pointsByGroups;
 	}
 	
+	/**
+	 * Return the angle form the Center Point
+	 * @param curPoint
+	 * @return
+	 */
 	public double angleFromTheCenterPoint(Point curPoint){
 		double angle = Math.toDegrees(Math.atan2(curPoint.x - this.averageCenterPoint.x, curPoint.y - this.averageCenterPoint.y));
 		//System.out.println("Angle"+angle);
@@ -134,10 +197,19 @@ public class TracingDataAnalysis {
 		return angle;
 	}
 	
+	
+	/**
+	 * Return the Group Splitting Result
+	 * @return
+	 */
 	public Boolean checkGroupResults(){
 		return true;
 	}
 	
+	/**
+	 * Return Standard Div For the give distance Array
+	 * @return
+	 */
 	public String RsessionProcessCalculateIntervalSD(){
 		StringBuilder output = new StringBuilder();
 		
@@ -155,6 +227,10 @@ public class TracingDataAnalysis {
 		return null;
 	}
 	
+	/**
+	 * Split the degree participation
+	 * @param degree
+	 */
 	public void processAnalysisTheBoundariesByFloorDegreeInterval(double degree){
 		double testDegree = degree;
 		
@@ -173,6 +249,11 @@ public class TracingDataAnalysis {
 		}
 	}
 	
+	/**
+	 * Split the points by the given participation degree
+	 * @param degree
+	 * @return
+	 */
 	public Boolean analysisTheBoundariesByDegreeInterval(double degree){
 		Vector<Vector<Point>> pointsByGroups = this.splitThePointsByDegree(degree);
 		Vector<Vector<Double>> tmpDiscByGroups = new Vector<Vector<Double>>();
@@ -221,4 +302,85 @@ public class TracingDataAnalysis {
 
 		return true;
 	}
+	
+
+	public Vector<Float> compareCorrelationsBetweenTwoGroupofPoints(Vector<Point> _setA,Vector<Point> _setB){
+		
+		float result = 0;
+		
+		Vector<Point> setA = new Vector<Point>(_setA);
+		Vector<Point> setB = new Vector<Point>(_setB);
+		Vector<Float> distanceList = new Vector<Float>();
+		System.out.println("SetBSize:"+setB.size());
+		float checkDistance = 0;
+		while(setB.size() > 0){
+			for (Point pA : setA){
+				for (Point pB : setB){
+					float x = Math.abs(pB.x - pA.x);
+					float y = Math.abs(pB.y - pA.y);
+					if ((x <= checkDistance && y <= checkDistance)){
+						System.out.println("！！NeiPoints:"+setB.size());
+						result+=checkDistance;
+						distanceList.add(checkDistance);
+						setB.remove(pB);
+						break;
+					}
+				}
+			}
+			checkDistance++;
+		}
+		
+//		System.out.println(distanceList.toString());
+		
+		
+		
+		
+//		
+//		for (Point pA : setA){
+//			System.out.println("InSide 1SetBSize:"+setB.size());
+//			for (Point pB : setB){
+//				if (pA.x == pB.x && pA.y == pB.y){
+//					System.out.println("！！Same:"+setB.size());
+//					result++;
+//					setB.remove(pB);
+//					break;
+//				}
+//			}
+//		}
+//		System.out.println("SetBSize:"+setB.size());
+//		for (Point pA : setA){
+//			for (Point pB : setB){
+//				float x = Math.abs(pB.x - pA.x);
+//				float y = Math.abs(pB.y - pA.y);
+//				if ((x <= 1 && y <= 1)){
+//					System.out.println("！！NeiPoints:"+setB.size());
+//					result+=1;
+//					setB.remove(pB);
+//					break;
+//				}
+//			}
+//		}
+//		
+//		for (Point pA : setA){
+//			for (Point pB : setB){
+//				float x = Math.abs(pB.x - pA.x);
+//				float y = Math.abs(pB.y - pA.y);
+//				if ((x <= 1 && y <= 1)){
+//					System.out.println("！！NeiPoints:"+setB.size());
+//					result+=0.5;
+//					setB.remove(pB);
+//					break;
+//				}
+//			}
+//		}
+		
+		
+		//System.out.println("SetBSize:"+setB.size());
+		
+		//result = (result)/(_setB.size());
+		
+		return distanceList;
+	}
+	
+	
 }

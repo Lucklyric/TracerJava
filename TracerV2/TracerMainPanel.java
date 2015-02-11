@@ -73,7 +73,7 @@ public class TracerMainPanel extends JPanel implements ActionListener, Component
 		upperControlsPanel.add(this.fileOptionsPanel);
 		upperControlsPanel.add(this.layerOptionsPanel);
 		upperControlsPanel.add(this.viewOptionsPanel);
-		
+	
 		//upperControlsPanel.setPreferredSize(new Dimension(0,500));
 		
 		this.add(upperControlsPanel, BorderLayout.PAGE_START);
