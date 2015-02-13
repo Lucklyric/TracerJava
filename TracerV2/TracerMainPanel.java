@@ -415,7 +415,7 @@ public class TracerMainPanel extends JPanel implements ActionListener, Component
 					" its not in use by a different program.");
 			return;
 		}
-		this.mTracingDataAnalysis = new TracingDataAnalysis();
+
 		this.tracingLayers = new Vector<TracingLayer>();
 		
 		TracingLayer tempLayer = null;

@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="/Users/AlvinSun/Documents/Alvin/Code/TracerJava/Rserve.jar"/>
 	<classpathentry kind="lib" path="/Users/AlvinSun/Documents/Alvin/Code/TracerJava/Rsession.jar"/>
 	<classpathentry kind="lib" path="/Users/AlvinSun/Documents/Alvin/Code/TracerJava/REngine.jar"/>
+	<classpathentry kind="lib" path="/Users/AlvinSun/Documents/Alvin/Code/TracerJava/matlabcontrol-4.1.0.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

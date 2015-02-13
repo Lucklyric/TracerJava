@@ -2,6 +2,13 @@ import java.awt.*;
 import java.io.File;
 import java.util.*;
 
+import matlabcontrol.MatlabConnectionException;
+import matlabcontrol.MatlabInvocationException;
+import matlabcontrol.MatlabProxy;
+import matlabcontrol.MatlabProxyFactory;
+import matlabcontrol.extensions.MatlabNumericArray;
+import matlabcontrol.extensions.MatlabTypeConverter;
+
 import org.math.R.RserverConf;
 import org.math.R.Rsession;
 import org.rosuda.REngine.REXPMismatchException;
@@ -15,6 +22,7 @@ public class TracingDataAnalysis {
 	private int totalSamples;
 	Vector<Vector<Double>> disctancsByGroups;
 	private Rsession Rserver;
+	private MatlabProxy matLabProxy;
 	private float estimateError;
 	
 	public TracingDataAnalysis(){
@@ -22,6 +30,15 @@ public class TracingDataAnalysis {
 		this.disctancsByGroups = new Vector<Vector<Double>>();
 		this.samples = new Vector<Vector<Point>>();
 		this.Rserver = Rsession.newInstanceTry(System.out,null);
+		try {
+			this.initMatLabProxy();
+		} catch (MatlabInvocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MatlabConnectionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		averageCenterPoint = new Point();
 		totalSamples = 0;
 		estimateError = 0;
@@ -56,6 +73,7 @@ public class TracingDataAnalysis {
 	 * @throws REXPMismatchException
 	 */
 	public String initData() throws REXPMismatchException {
+	
 		System.out.println("Number of Tests:"+ this.samples.size() );
 		System.out.println("Number of Samples:"+ this.totalSamples );
 		double[][] RdataSet = new double[totalSamples][3];
@@ -76,22 +94,25 @@ public class TracingDataAnalysis {
 		float maxResult = 0;
 		float minResult = -1;
 		Vector<Float> totalDistanceList = new Vector<Float>();
-		for (int i = 0 ; i < this.samples.size() ; i++){
-			for(int j = 0 ; j < this.samples.size() ; j++){
-				if (i != j){
-//					float result = (this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(i), this.samples.get(j)	));
-//					System.out.println(":"+result);
-//					totalCompareResult+= result;
-//					if(maxResult < result){
-//						maxResult = result;
-//					}
-//					if(minResult > result || minResult == -1){
-//						minResult = result;
-//					}
-					totalDistanceList.addAll(this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(i), this.samples.get(j)));
-				}
-			}
+//		for (int i = 0 ; i < this.samples.size() ; i++){
+//			for(int j = 0 ; j < this.samples.size() ; j++){
+//				if (i != j){
+//					totalDistanceList.addAll(this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(i), this.samples.get(j)));
+//				}
+//			}
+//		}
+		
+		totalDistanceList.addAll(this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(0), this.samples.get(1)));
+		try {
+			this.inputDistArray(totalDistanceList);
+		} catch (MatlabInvocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MatlabConnectionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 		
 		System.out.println(totalDistanceList.toString());
 		double[] RDistanceSet = new double[totalDistanceList.size()];
@@ -110,22 +131,7 @@ public class TracingDataAnalysis {
 		//Rserver.eval("x")
 		return "Posbility=:\n"+"MAX:"+maxResult+"\nMIN:"+minResult+"\nMean:"+totalCompareResult/(this.samples.size()*(this.samples.size()-1));
 		
-		
-		//Test R 
-		//Rsession s = Rsession.newInstanceTry(System.out,null);
-//		Rserver.set("df", RdataSet, "x", "y", "g");
-//		Rserver.eval("y<-as.matrix(df[,1:2])");
-//		//s.eval("factor=df[,3]");
-//		Rserver.eval("Group<-as.factor(df[,3])");
-//		Rserver.eval("result<-manova(y~Group)");
-//		String resultForWilks = Rserver.asString("summary.manova(result,test=c('Wilks'))");
-//		String resultForPillai = Rserver.asString("summary.manova(result,test=c('Pillai'))");
-//		String resultForHotelling = Rserver.asString("summary.manova(result,test=c('Hotelling-Lawley'))");
-//		String resultForRoy = Rserver.asString("summary.manova(result,test=c('Roy'))");
-//		String txt = resultForWilks + "\n" + resultForPillai + "\n" + resultForHotelling + "\n" + resultForRoy;
-//        System.out.println(txt);
-//        this.averageCenterPoint = this.returnAverageCenterPoint();
-//        return txt+"\n"+this.averageCenterPoint.toString();
+
 	}
 	
 	/**
@@ -334,52 +340,47 @@ public class TracingDataAnalysis {
 		
 		
 		
-		
-//		
-//		for (Point pA : setA){
-//			System.out.println("InSide 1SetBSize:"+setB.size());
-//			for (Point pB : setB){
-//				if (pA.x == pB.x && pA.y == pB.y){
-//					System.out.println("！！Same:"+setB.size());
-//					result++;
-//					setB.remove(pB);
-//					break;
-//				}
-//			}
-//		}
-//		System.out.println("SetBSize:"+setB.size());
-//		for (Point pA : setA){
-//			for (Point pB : setB){
-//				float x = Math.abs(pB.x - pA.x);
-//				float y = Math.abs(pB.y - pA.y);
-//				if ((x <= 1 && y <= 1)){
-//					System.out.println("！！NeiPoints:"+setB.size());
-//					result+=1;
-//					setB.remove(pB);
-//					break;
-//				}
-//			}
-//		}
-//		
-//		for (Point pA : setA){
-//			for (Point pB : setB){
-//				float x = Math.abs(pB.x - pA.x);
-//				float y = Math.abs(pB.y - pA.y);
-//				if ((x <= 1 && y <= 1)){
-//					System.out.println("！！NeiPoints:"+setB.size());
-//					result+=0.5;
-//					setB.remove(pB);
-//					break;
-//				}
-//			}
-//		}
-		
-		
 		//System.out.println("SetBSize:"+setB.size());
 		
 		//result = (result)/(_setB.size());
 		
 		return distanceList;
+	}
+	
+	/**
+	 * Test MatLab
+	 * @throws MatlabInvocationException 
+	 * @throws MatlabConnectionException 
+	 */
+	public void testMatLab() throws MatlabInvocationException, MatlabConnectionException {
+//		MatlabProxyFactory factory = new MatlabProxyFactory();
+//	    MatlabProxy proxy = factory.getProxy();
+//	    //Set a variable, add to it, retrieve it, and print the result
+//	    proxy.setVariable("a", 5);
+//	    proxy.eval("a = a + 6");
+//	    Object result = proxy.getVariable("a");
+//	    System.out.println("Result: " + result);
+//	    //Disconnect the proxy from MATLAB
+//	    proxy.disconnect();
+	}
+	
+	public void inputDistArray(Vector<Float> disArray) throws MatlabInvocationException, MatlabConnectionException {
+		double[][] matDisArray = new double[1][disArray.size()];
+		for(int i = 0 ; i < disArray.size() ; i++){
+			matDisArray[0][i] = disArray.get(i);
+		}
+		MatlabTypeConverter processor = new MatlabTypeConverter(this.matLabProxy);
+	    processor.setNumericArray("array", new MatlabNumericArray(matDisArray, null));
+	    this.matLabProxy.eval("array = transpose(array)");
+	}
+	
+	public void initMatLabProxy() throws MatlabInvocationException, MatlabConnectionException {
+		MatlabProxyFactory factory = new MatlabProxyFactory();
+	    this.matLabProxy = factory.getProxy();		
+	}
+	
+	public void disconnectMatLabProxy() throws MatlabInvocationException, MatlabConnectionException {
+		this.matLabProxy.disconnect();	
 	}
 	
 	
