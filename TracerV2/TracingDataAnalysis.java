@@ -102,7 +102,9 @@ public class TracingDataAnalysis {
 //			}
 //		}
 		
-		totalDistanceList.addAll(this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(0), this.samples.get(1)));
+		System.out.println("Asize:"+this.samples.get(0).size()+"Bsize:"+this.samples.get(1));
+		
+		totalDistanceList.addAll(this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(1), this.samples.get(0)));
 		try {
 			this.inputDistArray(totalDistanceList);
 		} catch (MatlabInvocationException e) {
@@ -112,6 +114,30 @@ public class TracingDataAnalysis {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+//		totalDistanceList.clear();
+//		totalDistanceList.addAll(this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(0), this.samples.get(2)));
+//		try {
+//			this.inputDistArray(totalDistanceList);
+//		} catch (MatlabInvocationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (MatlabConnectionException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		totalDistanceList.clear();
+//		totalDistanceList.addAll(this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(1), this.samples.get(2)));
+//		try {
+//			this.inputDistArray(totalDistanceList);
+//		} catch (MatlabInvocationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (MatlabConnectionException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		
 		System.out.println(totalDistanceList.toString());
@@ -336,14 +362,6 @@ public class TracingDataAnalysis {
 			checkDistance++;
 		}
 		
-//		System.out.println(distanceList.toString());
-		
-		
-		
-		//System.out.println("SetBSize:"+setB.size());
-		
-		//result = (result)/(_setB.size());
-		
 		return distanceList;
 	}
 	
@@ -372,6 +390,7 @@ public class TracingDataAnalysis {
 		MatlabTypeConverter processor = new MatlabTypeConverter(this.matLabProxy);
 	    processor.setNumericArray("array", new MatlabNumericArray(matDisArray, null));
 	    this.matLabProxy.eval("array = transpose(array)");
+	    this.matLabProxy.eval("testFunction");
 	}
 	
 	public void initMatLabProxy() throws MatlabInvocationException, MatlabConnectionException {
