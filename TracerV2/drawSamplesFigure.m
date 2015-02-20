@@ -28,3 +28,5 @@ subplot(2,2,3),bar(x3,y3),title('CB');
 for i = 1:numel(x3)
     text(x3(i), y3(i) + 0.02, [num2str(y3(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
+
+result = calculateResultWithError(3,normalized1,normalized2,normalized3);

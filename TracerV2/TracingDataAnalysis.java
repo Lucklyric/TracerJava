@@ -74,6 +74,7 @@ public class TracingDataAnalysis {
 	 */
 	public String initData() throws REXPMismatchException {
 	
+	    this.clearMatLab();
 		System.out.println("Number of Tests:"+ this.samples.size() );
 		System.out.println("Number of Samples:"+ this.totalSamples );
 		double[][] RdataSet = new double[totalSamples][3];
@@ -139,7 +140,7 @@ public class TracingDataAnalysis {
 			e.printStackTrace();
 		}
 		
-		
+		/*
 		System.out.println(totalDistanceList.toString());
 		double[] RDistanceSet = new double[totalDistanceList.size()];
 		for (int i = 0 ; i < totalDistanceList.size(); i++){
@@ -152,10 +153,10 @@ public class TracingDataAnalysis {
 			System.out.println(dis);
 		}
 		
-		
-		
 		//Rserver.eval("x")
-		return "Posbility=:\n"+"MAX:"+maxResult+"\nMIN:"+minResult+"\nMean:"+totalCompareResult/(this.samples.size()*(this.samples.size()-1));
+
+		 * */
+		return this.outputDistanceFigure();
 		
 
 	}
@@ -228,7 +229,6 @@ public class TracingDataAnalysis {
 		if (angle < 0) angle += 360;
 		return angle;
 	}
-	
 	
 	/**
 	 * Return the Group Splitting Result
@@ -393,9 +393,26 @@ public class TracingDataAnalysis {
 	    this.matLabProxy.eval(arrayName+" = transpose(array)");
 	}
 	
-	public void outputDistanceFigure(){
+	public String outputDistanceFigure(){
+		String result = "Result:";
 		try {
 			this.matLabProxy.eval("drawSamplesFigure");
+			 MatlabTypeConverter processor = new MatlabTypeConverter(this.matLabProxy);
+			    MatlabNumericArray array = processor.getNumericArray("result");
+			    //Print out the same entry, using Java's 0-based indexing
+			    result += ("\n" + array.getRealValue(0, 0)) + "%";
+			    result += ("\n" + array.getRealValue(1, 0)) + "%";
+			    result += ("\n" + array.getRealValue(2, 0)) + "%";
+		} catch (MatlabInvocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public void clearMatLab(){
+		try {
+			this.matLabProxy.eval("clear");
 		} catch (MatlabInvocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -404,12 +421,13 @@ public class TracingDataAnalysis {
 	
 	public void initMatLabProxy() throws MatlabInvocationException, MatlabConnectionException {
 		MatlabProxyFactory factory = new MatlabProxyFactory();
-	    this.matLabProxy = factory.getProxy();		
+	    this.matLabProxy = factory.getProxy();	
 	}
 	
 	public void disconnectMatLabProxy() throws MatlabInvocationException, MatlabConnectionException {
 		this.matLabProxy.disconnect();	
 	}
+	
 	
 	
 }
