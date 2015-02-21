@@ -417,7 +417,7 @@ public class TracerMainPanel extends JPanel implements ActionListener, Component
 		}
 
 		this.tracingLayers = new Vector<TracingLayer>();
-		
+		this.mTracingDataAnalysis.resetData();
 		TracingLayer tempLayer = null;
 		Vector<Point> pathPoints = null;
 		Vector<Color> pathColors = null;
@@ -506,9 +506,10 @@ public class TracerMainPanel extends JPanel implements ActionListener, Component
 			}
 		}
 		//Flush out the last tempLayer
-		if(tempLayer != null)
+		if(tempLayer != null){
 			this.tracingLayers.addElement(tempLayer);
 			this.mTracingDataAnalysis.addLayer(tempLayer);
+		}
 		this.synchronizeLayerIDs();
 		//Forcibly turn on Super-Impose mode
 		if(!this.viewOptionsPanel.isSuperImposeModeOn()){

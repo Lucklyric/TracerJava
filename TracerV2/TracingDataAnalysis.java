@@ -44,6 +44,18 @@ public class TracingDataAnalysis {
 		estimateError = 0;
 	}
 	
+	
+	public void resetData(){
+		this.sampleLayers = new Vector<TracingLayer>();
+		this.disctancsByGroups = new Vector<Vector<Double>>();
+		this.samples = new Vector<Vector<Point>>();
+		//this.Rserver = Rsession.newInstanceTry(System.out,null);
+
+		averageCenterPoint = new Point();
+		totalSamples = 0;
+		estimateError = 0;
+	}
+	
 	public void addLayer(TracingLayer tempLayer){
 		if (tempLayer.getPoints().size() == 0) return;
 		this.sampleLayers.addElement(tempLayer);
@@ -77,35 +89,12 @@ public class TracingDataAnalysis {
 	    this.clearMatLab();
 		System.out.println("Number of Tests:"+ this.samples.size() );
 		System.out.println("Number of Samples:"+ this.totalSamples );
-		double[][] RdataSet = new double[totalSamples][3];
-		int k = 0;
-		for (int i = 0 ; i < this.samples.size() ; i++){
-			//System.out.println("Num:"+i+"th test");
-			
-			for (int j = 0; j < this.samples.get(i).size(); j++) {
-				RdataSet[k][0] = this.samples.get(i).get(j).x;
-				RdataSet[k][1] = this.samples.get(i).get(j).y;
-				RdataSet[k][2] = i;
-				//System.out.println(this.samples.get(i).get(j).x +" "+ this.samples.get(i).get(j).y );
-				k++;
-			}
-		}
-		
-		float totalCompareResult = 0;
-		float maxResult = 0;
-		float minResult = -1;
-		Vector<Float> totalDistanceList = new Vector<Float>();
-//		for (int i = 0 ; i < this.samples.size() ; i++){
-//			for(int j = 0 ; j < this.samples.size() ; j++){
-//				if (i != j){
-//					totalDistanceList.addAll(this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(i), this.samples.get(j)));
-//				}
-//			}
-//		}
+		this.inputOriginalPointToMatLab();
+		double[] totalDistanceList;
 		
 		System.out.println("Asize:"+this.samples.get(0).size()+"Bsize:"+this.samples.get(1));
 		
-		totalDistanceList.addAll(this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(1), this.samples.get(0)));
+		totalDistanceList = (this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(1), this.samples.get(0)));
 		try {
 			this.inputDistArray(totalDistanceList,1);
 		} catch (MatlabInvocationException e) {
@@ -116,8 +105,8 @@ public class TracingDataAnalysis {
 			e.printStackTrace();
 		}
 		
-		totalDistanceList.clear();
-		totalDistanceList.addAll(this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(0), this.samples.get(2)));
+		
+		totalDistanceList = (this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(0), this.samples.get(2)));
 		try {
 			this.inputDistArray(totalDistanceList,2);
 		} catch (MatlabInvocationException e) {
@@ -128,8 +117,8 @@ public class TracingDataAnalysis {
 			e.printStackTrace();
 		}
 		
-		totalDistanceList.clear();
-		totalDistanceList.addAll(this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(1), this.samples.get(2)));
+	
+		totalDistanceList = (this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(1), this.samples.get(2)));
 		try {
 			this.inputDistArray(totalDistanceList,3);
 		} catch (MatlabInvocationException e) {
@@ -156,6 +145,9 @@ public class TracingDataAnalysis {
 		//Rserver.eval("x")
 
 		 * */
+		
+		
+		
 		return this.outputDistanceFigure();
 		
 
@@ -336,7 +328,7 @@ public class TracingDataAnalysis {
 	}
 	
 
-	public Vector<Float> compareCorrelationsBetweenTwoGroupofPoints(Vector<Point> _setA,Vector<Point> _setB){
+	public double[] compareCorrelationsBetweenTwoGroupofPoints(Vector<Point> _setA,Vector<Point> _setB){
 		
 		float result = 0;
 		
@@ -345,24 +337,29 @@ public class TracingDataAnalysis {
 		Vector<Float> distanceList = new Vector<Float>();
 		System.out.println("SetBSize:"+setB.size());
 		float checkDistance = 0;
-		while(setB.size() > 0){
+		double[] orderDistance = new double[_setB.size()];
+		for(int i = 0 ; i < _setB.size();i++){
+			orderDistance[i] = -1;
+		}
+		
+		while(result < setB.size()){
 			for (Point pA : setA){
-				for (Point pB : setB){
-					float x = Math.abs(pB.x - pA.x);
-					float y = Math.abs(pB.y - pA.y);
-					if ((x <= checkDistance && y <= checkDistance)){
-						System.out.println("！！NeiPoints:"+setB.size());
-						result+=checkDistance;
-						distanceList.add(checkDistance);
-						setB.remove(pB);
-						break;
+				for (int i = 0 ; i < setB.size() ; i++){
+					if (orderDistance[i] == -1){
+						float x = Math.abs(setB.get(i).x - pA.x);
+						float y = Math.abs(setB.get(i).y - pA.y);
+						if ((x <= checkDistance && y <= checkDistance)){
+							System.out.println("！！NeiPoints:"+setB.size());
+							result++;
+							distanceList.add(checkDistance);
+							orderDistance[i] = checkDistance;
+						}
 					}
 				}
 			}
 			checkDistance++;
 		}
-		
-		return distanceList;
+		return orderDistance;
 	}
 	
 	/**
@@ -382,11 +379,11 @@ public class TracingDataAnalysis {
 //	    proxy.disconnect();
 	}
 	
-	public void inputDistArray(Vector<Float> disArray,int sampleIndex) throws MatlabInvocationException, MatlabConnectionException {
+	public void inputDistArray(double[] disArray,int sampleIndex) throws MatlabInvocationException, MatlabConnectionException {
 		String arrayName = "sample"+sampleIndex;
-		double[][] matDisArray = new double[1][disArray.size()];
-		for(int i = 0 ; i < disArray.size() ; i++){
-			matDisArray[0][i] = disArray.get(i);
+		double[][] matDisArray = new double[1][disArray.length];
+		for(int i = 0 ; i < disArray.length ; i++){
+			matDisArray[0][i] = disArray[i];
 		}
 		MatlabTypeConverter processor = new MatlabTypeConverter(this.matLabProxy);
 	    processor.setNumericArray("array", new MatlabNumericArray(matDisArray, null));
@@ -400,14 +397,29 @@ public class TracingDataAnalysis {
 			 MatlabTypeConverter processor = new MatlabTypeConverter(this.matLabProxy);
 			    MatlabNumericArray array = processor.getNumericArray("result");
 			    //Print out the same entry, using Java's 0-based indexing
-			    result += ("\n" + array.getRealValue(0, 0)) + "%";
-			    result += ("\n" + array.getRealValue(1, 0)) + "%";
-			    result += ("\n" + array.getRealValue(2, 0)) + "%";
+			    result += ("\nAB:" + Math.round(array.getRealValue(0, 0)*1000)/1000.0f) + "%";
+			    result += ("\nAC:" + Math.round(array.getRealValue(1, 0)*1000)/1000.0f) + "%";
+			    result += ("\nBC:" + Math.round(array.getRealValue(2, 0)*1000)/1000.0f) + "%";
 		} catch (MatlabInvocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	public String outputAreaFigure(){
+		String result= "Result:";
+		//TODO MatLab Area check function
+		return result;
+	}
+	
+	public void outputDistanceCircleFigure(){
+		try {
+			this.matLabProxy.eval("drawDistanceCircle(sample1,sample2,sample3)");
+		} catch (MatlabInvocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void clearMatLab(){
@@ -416,6 +428,26 @@ public class TracingDataAnalysis {
 		} catch (MatlabInvocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	public void inputOriginalPointToMatLab(){
+		
+		for (int i = 0 ; i < this.samples.size(); i++){
+			String arrayName = "originalPoints"+(i+1);
+			double[][] dataSets = new double[2][this.samples.get(i).size()];
+			for (int j = 0 ; j < this.samples.get(i).size() ; j++){
+				dataSets[0][j] = this.samples.get(i).get(j).x;
+				dataSets[1][j] = this.samples.get(i).get(j).y;
+				MatlabTypeConverter processor = new MatlabTypeConverter(this.matLabProxy);
+			    try {
+					processor.setNumericArray("array", new MatlabNumericArray(dataSets, null));
+					this.matLabProxy.eval(arrayName+" = transpose(array)");
+				} catch (MatlabInvocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
