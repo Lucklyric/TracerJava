@@ -94,7 +94,7 @@ public class TracingDataAnalysis {
 		
 		System.out.println("Asize:"+this.samples.get(0).size()+"Bsize:"+this.samples.get(1));
 		
-		totalDistanceList = (this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(1), this.samples.get(0)));
+		totalDistanceList = (this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(0), this.samples.get(1)));
 		try {
 			this.inputDistArray(totalDistanceList,1);
 		} catch (MatlabInvocationException e) {
@@ -129,6 +129,42 @@ public class TracingDataAnalysis {
 			e.printStackTrace();
 		}
 		
+		//reverse Compare
+		totalDistanceList = (this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(1), this.samples.get(0)));
+		try {
+			this.inputDistArray(totalDistanceList,4);
+		} catch (MatlabInvocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MatlabConnectionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		totalDistanceList = (this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(2), this.samples.get(0)));
+		try {
+			this.inputDistArray(totalDistanceList,5);
+		} catch (MatlabInvocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MatlabConnectionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	
+		totalDistanceList = (this.compareCorrelationsBetweenTwoGroupofPoints(this.samples.get(2), this.samples.get(1)));
+		try {
+			this.inputDistArray(totalDistanceList,6);
+		} catch (MatlabInvocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MatlabConnectionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		/*
 		System.out.println(totalDistanceList.toString());
 		double[] RDistanceSet = new double[totalDistanceList.size()];
@@ -147,7 +183,7 @@ public class TracingDataAnalysis {
 		 * */
 		
 		
-		
+		this.outputDistanceCircleFigure();
 		return this.outputDistanceFigure();
 		
 
@@ -314,7 +350,6 @@ public class TracingDataAnalysis {
 						length = -length;
 					}
 					distanceLists.addElement(length);
-					
 				}	
 			}
 			tmpDiscByGroups.add(distanceLists);
@@ -432,25 +467,27 @@ public class TracingDataAnalysis {
 	}
 	
 	public void inputOriginalPointToMatLab(){
-		
+
 		for (int i = 0 ; i < this.samples.size(); i++){
 			String arrayName = "originalPoints"+(i+1);
 			double[][] dataSets = new double[2][this.samples.get(i).size()];
 			for (int j = 0 ; j < this.samples.get(i).size() ; j++){
 				dataSets[0][j] = this.samples.get(i).get(j).x;
 				dataSets[1][j] = this.samples.get(i).get(j).y;
-				MatlabTypeConverter processor = new MatlabTypeConverter(this.matLabProxy);
-			    try {
-					processor.setNumericArray("array", new MatlabNumericArray(dataSets, null));
-					this.matLabProxy.eval(arrayName+" = transpose(array)");
-				} catch (MatlabInvocationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
+			MatlabTypeConverter processor = new MatlabTypeConverter(this.matLabProxy);
+			try {
+				//this.matLabProxy.eval("array = zeros(2,"+this.samples.get(i).size()+")");
+				processor.setNumericArray("array", new MatlabNumericArray(dataSets, null));
+				this.matLabProxy.eval(arrayName+" = transpose(array)");
+			} catch (MatlabInvocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 	}
-	
+
 	public void initMatLabProxy() throws MatlabInvocationException, MatlabConnectionException {
 		MatlabProxyFactory factory = new MatlabProxyFactory();
 	    this.matLabProxy = factory.getProxy();	
