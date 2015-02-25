@@ -29,8 +29,15 @@ function [sensitivity,specificity,precision] = positiveNegationDef(pointsA,array
     truePositive = numel(intersect(positiveAB,positiveAC,'rows'))/2*2;
     falsePositive = (numel(positiveAB)+numel(positiveAC))/2 - truePositive;
     
+    disp(truePositive);
+    disp([numel(positiveAB)/2,numel(positiveAC)/2,falsePositive]);
+    
     trueNegative = numel(intersect(negativeAB,negativeAC,'rows'))/2*2;
     falseNegative = (numel(negativeAB)+numel(negativeAC))/2 - trueNegative;
+    
+    disp(trueNegative);
+    disp([numel(negativeAB)/2,numel(negativeAC)/2,falseNegative]);
+
     
     sensitivity = truePositive/(truePositive+falseNegative);
     specificity = trueNegative/(trueNegative+falsePositive);
