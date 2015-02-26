@@ -1,5 +1,5 @@
 %TP FP TN FN Defnintion
-function [sensitivity,precision,fpr] = positiveNegationDefV3(pointsB,pointsC,arrayAB,arrayAC,arrayCB,arrayBC)
+function [sensitivity,precision,specificity] = positiveNegationDefV3(pointsB,pointsC,arrayAB,arrayAC,arrayCB,arrayBC)
     %getABset
     positiveAB = [];
     negativeAB = [];
@@ -128,21 +128,26 @@ function [sensitivity,precision,fpr] = positiveNegationDefV3(pointsB,pointsC,arr
     disp([truePositive,falsePositive,trueNegative,falseNegative,numel(realNegative)/2,numel(realPositive)/2,numel(testNegative)/2,numel(testPositive)/2]);
 
     positiveWeight = (truePositive)/(numel(realPositive)/2+numel(realNegative)/2);
-    negativeWeight = (falseNegative)/(numel(realPositive)/2+numel(realNegative)/2);
+    negativeWeight = (trueNegative)/(numel(realPositive)/2+numel(realNegative)/2);
     if (truePositive+falseNegative)==0
         sensitivity = positiveWeight;
     else
         sensitivity = ((truePositive/(truePositive+falseNegative)))*positiveWeight;
     end
     
-    %specificity = (trueNegative/(trueNegative+falsePositive));
+    
+    if (trueNegative+falsePositive)==0 
+        specificity = negativeWeight;
+    else
+        specificity = (trueNegative/(trueNegative+falsePositive))*negativeWeight;
+    end
+    
     
     precision = truePositive/(truePositive+falsePositive)*positiveWeight;
     
-    if (falsePositive+trueNegative) == 0
-        fpr = negativeWeight;
-    else
-        fpr = falsePositive/(falsePositive+trueNegative)*negativeWeight;
-    end;
-    
+%     if (falsePositive+trueNegative) == 0
+%         fpr = negativeWeight;
+%     else
+%         fpr = falsePositive/(falsePositive+trueNegative)*negativeWeight;
+%     end;
 end
