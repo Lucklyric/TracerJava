@@ -6,7 +6,7 @@
 %draw Samples Figure (Distance Bar)
 drawSamplesFigure;
 %draw DistanceCircle
-drawDistanceCircle(sample1,sample2,sample3);
+drawDistanceCircle(sample1,sample2,sample3,sample4,sample5,sample6);
 %Calculate distace ROC parameters
 SEarray=[];
 FPRarray=[];

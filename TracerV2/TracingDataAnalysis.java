@@ -23,6 +23,7 @@ public class TracingDataAnalysis {
 	Vector<Vector<Double>> disctancsByGroups;
 	private Rsession Rserver;
 	private MatlabProxy matLabProxy;
+	private Vector<Double> percentageResults;
 	private float estimateError;
 	
 	public TracingDataAnalysis(){
@@ -42,6 +43,8 @@ public class TracingDataAnalysis {
 		averageCenterPoint = new Point();
 		totalSamples = 0;
 		estimateError = 0;
+		percentageResults = new Vector<Double>();
+		percentageResults.add(-1.0);
 	}
 	
 	
@@ -89,6 +92,7 @@ public class TracingDataAnalysis {
 	    this.clearMatLab();
 		System.out.println("Number of Tests:"+ this.samples.size() );
 		System.out.println("Number of Samples:"+ this.totalSamples );
+		
 		this.inputOriginalPointToMatLab();
 		double[] totalDistanceList;
 		
@@ -183,8 +187,9 @@ public class TracingDataAnalysis {
 		 * */
 		
 		
-		this.outputDistanceCircleFigure();
-		return this.outputDistanceFigure();
+		//this.outputDistanceCircleFigure();
+		this.matLabMainWorkFlow();
+		return "test";
 		
 
 	}
@@ -442,6 +447,8 @@ public class TracingDataAnalysis {
 		return result;
 	}
 	
+
+	
 	public String outputAreaFigure(){
 		String result= "Result:";
 		//TODO MatLab Area check function
@@ -451,6 +458,19 @@ public class TracingDataAnalysis {
 	public void outputDistanceCircleFigure(){
 		try {
 			this.matLabProxy.eval("drawDistanceCircle(sample1,sample2,sample3)");
+		} catch (MatlabInvocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void matLabMainWorkFlow(){
+		try {
+			this.matLabProxy.eval("mainWorkFlowV2");
+			MatlabTypeConverter processor = new MatlabTypeConverter(this.matLabProxy);
+		    MatlabNumericArray array = processor.getNumericArray("percentage");
+		    this.percentageResults.add((double) (Math.round(array.getRealValue(0)*1000)/1000.0f));
 		} catch (MatlabInvocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -468,6 +488,13 @@ public class TracingDataAnalysis {
 	
 	public void inputOriginalPointToMatLab(){
 
+		
+		for(int i = 0 ; i < this.samples.size(); i++){
+			Vector<Point> newVecotor = this.removeDuplicateValue(this.samples.get(i));
+			this.samples.setElementAt(newVecotor, i);
+		}
+		
+		
 		for (int i = 0 ; i < this.samples.size(); i++){
 			String arrayName = "originalPoints"+(i+1);
 			double[][] dataSets = new double[2][this.samples.get(i).size()];
@@ -486,6 +513,21 @@ public class TracingDataAnalysis {
 			}
 
 		}
+		double[][] preResults = new double[1][this.percentageResults.size()];
+		//Pre-Resutls List
+		for(int i = 0; i < this.percentageResults.size(); i++){
+			preResults[0][i] = this.percentageResults.get(i);
+		}
+		MatlabTypeConverter processor = new MatlabTypeConverter(this.matLabProxy);
+		try {
+			//this.matLabProxy.eval("array = zeros(2,"+this.samples.get(i).size()+")");
+			processor.setNumericArray("pre", new MatlabNumericArray(preResults,null));
+			this.matLabProxy.eval("percentageResults = transpose(pre)");
+		} catch (MatlabInvocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	public void initMatLabProxy() throws MatlabInvocationException, MatlabConnectionException {
@@ -496,7 +538,24 @@ public class TracingDataAnalysis {
 	public void disconnectMatLabProxy() throws MatlabInvocationException, MatlabConnectionException {
 		this.matLabProxy.disconnect();	
 	}
-	
-	
-	
+
+	private Vector<Point> removeDuplicateValue(Vector<Point>source) {
+
+		Vector<Point> newVector = new Vector<Point>();
+		for(Point p : source){
+			Boolean find = false;
+			for (Point pnew : newVector){
+				if (p.getX() == pnew.getX() && p.getY() == pnew.getY()){
+					find = true;
+					break;
+				}
+			}
+			if (!find){
+				newVector.add(p);
+			}
+		}
+
+		return newVector;
+
+	}
 }

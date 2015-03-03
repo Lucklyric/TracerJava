@@ -54,41 +54,39 @@ function [sensitivity,precision,specificity] = positiveNegationDefV3(pointsB,poi
     
     realPositive = [positiveBC;positiveCB];
     realPositive = unique(realPositive,'rows');
+
     
-    positiveBC = [];
-    negativeBC = [];
-    
-    for i = 1 : numel(arrayAB)
-        if arrayAB(i) <= 3
-            positiveAB(end+1,:) = pointsB(i,:);
-        else
-            negativeAB(end+1,:) = pointsB(i,:);
-        end
-    end
-    
-    for i = 1 : numel(arrayAC)
-        if arrayAC(i) <= 3
-            positiveAC(end+1,:) = pointsC(i,:);
-        else
-            negativeAC(end+1,:) = pointsC(i,:);
-        end
-    end
-    
-    for i = 1 : numel(arrayCB)
-        if arrayCB(i) <= 3
-            positiveCB(end+1,:) = pointsB(i,:);
-        else
-            negativeCB(end+1,:) = pointsB(i,:);
-        end
-    end
-    
-    for i = 1 : numel(arrayBC)
-        if arrayBC(i) <= 3
-            positiveBC(end+1,:) = pointsC(i,:);
-        else
-            negativeBC(end+1,:) = pointsC(i,:);
-        end
-    end
+%     for i = 1 : numel(arrayAB)
+%         if arrayAB(i) <= 3
+%             positiveAB(end+1,:) = pointsB(i,:);
+%         else
+%             negativeAB(end+1,:) = pointsB(i,:);
+%         end
+%     end
+%     
+%     for i = 1 : numel(arrayAC)
+%         if arrayAC(i) <= 3
+%             positiveAC(end+1,:) = pointsC(i,:);
+%         else
+%             negativeAC(end+1,:) = pointsC(i,:);
+%         end
+%     end
+%     
+%     for i = 1 : numel(arrayCB)
+%         if arrayCB(i) <= 3
+%             positiveCB(end+1,:) = pointsB(i,:);
+%         else
+%             negativeCB(end+1,:) = pointsB(i,:);
+%         end
+%     end
+%     
+%     for i = 1 : numel(arrayBC)
+%         if arrayBC(i) <= 3
+%             positiveBC(end+1,:) = pointsC(i,:);
+%         else
+%             negativeBC(end+1,:) = pointsC(i,:);
+%         end
+%     end
     
     positiveAB = unique(positiveAB,'rows');
     positiveAC = unique(positiveAC,'rows');
