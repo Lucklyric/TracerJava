@@ -532,6 +532,7 @@ public class TracingDataAnalysis {
 
 	public void initMatLabProxy() throws MatlabInvocationException, MatlabConnectionException {
 		MatlabProxyFactory factory = new MatlabProxyFactory();
+		
 	    this.matLabProxy = factory.getProxy();	
 	}
 	

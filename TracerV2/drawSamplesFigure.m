@@ -28,27 +28,27 @@ x6 = normalized_result6(:,1);
 y6 = normalized_result6(:,2)/100;
 %plot the normalized plot
 figure;
-subplot(3,2,1),bar(x4,y4),title('BA');
+subplot(3,2,1),bar(x4,y4),title('B-A(Base)');
 for i = 1:numel(x4)
     text(x4(i), y4(i) + 0.02, [num2str(y4(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
-subplot(3,2,2),bar(x5,y5),title('CA');
+subplot(3,2,2),bar(x5,y5),title('C-A(Base)');
 for i = 1:numel(x5)
     text(x5(i), y5(i) + 0.02, [num2str(y5(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
-subplot(3,2,3),bar(x1,y1),title('AB');
+subplot(3,2,3),bar(x1,y1),title('A-B(Base)');
 for i = 1:numel(x1)
     text(x1(i), y1(i) + 0.02, [num2str(y1(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
-subplot(3,2,4),bar(x6,y6),title('CB');
+subplot(3,2,4),bar(x6,y6),title('C-B(Base)');
 for i = 1:numel(x6)
     text(x6(i), y6(i) + 0.02, [num2str(y6(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
-subplot(3,2,5),bar(x2,y2),title('AC');
+subplot(3,2,5),bar(x2,y2),title('A-C(Base)');
 for i = 1:numel(x2)
     text(x2(i), y2(i) + 0.02, [num2str(y2(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
-subplot(3,2,6),bar(x3,y3),title('BC');
+subplot(3,2,6),bar(x3,y3),title('B-C(Base)');
 for i = 1:numel(x3)
     text(x3(i), y3(i) + 0.02, [num2str(y3(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
@@ -83,7 +83,7 @@ for i = 1:numel(x4)
     end
 end
 cy5 = zeros(1,numel(y5));
-for i = 1:numel(x2)
+for i = 1:numel(x5)
     cy5(i) = y5(i);
     if i ~= 1
         cy5(i) = y5(i) + cy5(i-1); 
@@ -98,27 +98,27 @@ for i = 1:numel(x6)
 end
 
 figure;
-subplot(3,2,1),bar(x4,cy4),title('BA');
+subplot(3,2,1),bar(x4,cy4),title('B-A(Base)');
 for i = 1:numel(x4)
     text(x4(i), cy4(i) + 0.02, [num2str(cy4(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
-subplot(3,2,2),bar(x5,cy5),title('CA');
+subplot(3,2,2),bar(x5,cy5),title('C-A(Base)');
 for i = 1:numel(x5)
     text(x5(i), cy5(i) + 0.02, [num2str(cy5(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
-subplot(3,2,3),bar(x1,cy1),title('AB');
+subplot(3,2,3),bar(x1,cy1),title('A-B(Base)');
 for i = 1:numel(x1)
     text(x1(i), cy1(i) + 0.02, [num2str(cy1(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
-subplot(3,2,4),bar(x6,cy6),title('CB');
+subplot(3,2,4),bar(x6,cy6),title('C-B(Base)');
 for i = 1:numel(x6)
     text(x6(i), cy6(i) + 0.02, [num2str(cy6(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
-subplot(3,2,5),bar(x2,cy2),title('AC');
+subplot(3,2,5),bar(x2,cy2),title('A-C(Base)');
 for i = 1:numel(x2)
     text(x2(i), cy2(i) + 0.02, [num2str(cy2(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
-subplot(3,2,6),bar(x3,cy3),title('BC');
+subplot(3,2,6),bar(x3,cy3),title('B-C(Base)');
 for i = 1:numel(x3)
     text(x3(i), cy3(i) + 0.02, [num2str(cy3(i)*100),'%'], 'VerticalAlignment', 'top', 'FontSize', 10,'Rotation',90)
 end
