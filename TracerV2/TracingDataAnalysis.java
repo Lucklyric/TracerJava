@@ -18,6 +18,7 @@ import org.rosuda.REngine.REXPMismatchException;
 public class TracingDataAnalysis {
 	private Vector<TracingLayer> sampleLayers;
 	private Vector<Vector<Point>> samples;
+	public Vector<Point> averageBoundary;
 	private Point averageCenterPoint;
 	private int totalSamples;
 	Vector<Vector<Double>> disctancsByGroups;
@@ -41,6 +42,7 @@ public class TracingDataAnalysis {
 			e.printStackTrace();
 		}
 		averageCenterPoint = new Point();
+		averageBoundary = new Vector<Point>();
 		totalSamples = 0;
 		estimateError = 0;
 		percentageResults = new Vector<Double>();
@@ -71,7 +73,6 @@ public class TracingDataAnalysis {
 		}
 		this.samples.addElement(tmpPointList);
 	}
-	
 	
 	
 	/**
@@ -193,6 +194,43 @@ public class TracingDataAnalysis {
 		
 
 	}
+	
+	
+	public void passTheAverageBoundary(){
+		this.averageBoundary = this.calculateAverageBoundary
+				((this.calculateAverageBoundary(this.samples.get(0), this.samples.get(1))),this.samples.get(2));
+	}
+	
+	
+	public Vector<Point> calculateAverageBoundary(Vector<Point> A, Vector<Point> B){
+		
+		Vector<Point> firstAverage = new Vector<Point>();
+		
+		for (Point pA: A){
+			double shortestdist = -1;
+			Point shortestPoint = new Point();
+			for (Point pB : B){
+				if (shortestdist == -1){
+					shortestdist = pA.distance(pB);
+					shortestPoint = pB;
+				}else{
+					if (shortestdist > pA.distance(pB)){
+						shortestdist = pA.distance(pB);
+						shortestPoint = pB;
+					}
+				}
+				
+				if (shortestdist == 0){
+					break;
+				}
+			}
+			Point average = new Point();
+			average.setLocation((pA.getX()+shortestPoint.getX())/2,(pA.getY()+shortestPoint.getY())/2);
+			firstAverage.addElement(average);
+		}
+		return firstAverage;
+	}
+	
 	
 	/**
 	 * Calculate The Average Point

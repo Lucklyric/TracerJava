@@ -267,10 +267,15 @@ public class TracerMainPanel extends JPanel implements ActionListener, Component
 		}else if(e.getActionCommand().equals(LayerOptionsPanel.ANA_MODE)){
 			//this.mainCanvas.bAnaModeActivated = this.layerOptionsPanel.anaModeActivated();
 			//Give CenterPoint
-			this.mainCanvas.drawOnePoint(this.mTracingDataAnalysis.returnAverageCenterPoint());
-			this.mTracingDataAnalysis.processAnalysisTheBoundariesByFloorDegreeInterval(2.0);
-			this.mTracingDataAnalysis.RsessionProcessCalculateIntervalSD();
-			
+			//this.mainCanvas.drawOnePoint(this.mTracingDataAnalysis.returnAverageCenterPoint());
+			this.mTracingDataAnalysis.passTheAverageBoundary();
+			System.out.println(this.mTracingDataAnalysis.averageBoundary);
+			this.mainCanvas.setDrawingColor(Color.orange);
+			this.mainCanvas.drawTheseLines(this.mTracingDataAnalysis.averageBoundary);
+		
+			for (Point p : this.mTracingDataAnalysis.averageBoundary){
+				this.mainCanvas.drawOnePoint(p);
+			}
 		}else if(e.getActionCommand().equals(LayerOptionsPanel.ERASE_MODE)){
 			if(this.layerOptionsPanel.eraserModeActivated()){
 				this.mainCanvas.setCursor(this.eraserCursor);
