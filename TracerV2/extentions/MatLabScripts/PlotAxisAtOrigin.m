@@ -13,7 +13,7 @@ function PlotAxisAtOrigin(x,y)
 
 % PLOT
 if nargin == 2 
-    plot(x,y,'.');
+    plot(x,y,'.','markersize', 8);
     hold on;
 else
     display('   Not 2D Data set !')
@@ -32,9 +32,11 @@ Xoff=diff(get(gca,'XLim'))./40;
 Yoff=diff(get(gca,'YLim'))./40;
 
 % DRAW AXIS LINEs
-plot([-max(x)-1,max(x)+1],[0 0],'k');
-plot([0 0],[-max(y)-1,max(y)+1],'k');
-
+% plot([-max(x)-1,max(x)+1],[0 0],'k');
+% plot([0 0],[-max(y)-1,max(y)+1],'k');
+% Hardcode for paper
+plot([-7,7],[0 0],'k');
+plot([0 0],[-7,7],'k');
 % Plot new ticks  
 for i=1:length(X)
     plot([X(i) X(i)],[0 Yoff],'-k');
@@ -49,7 +51,14 @@ end;
 box on;
 % axis square;
 axis on;
-axis([-max(x)-1,max(x)+1,-max(y)-1,max(y)+1]);
+%axis([-max(x)-1,max(x)+1,-max(y)-1,max(y)+1]);
+%Hardcode for paper
+axis([-7,7,-7,7]);
 grid on;
+ax = gca;
+ax.XTickLabel = {'7','6','5','4','3','2','1','0','1','2','3','4','5','6','7'};
+ax.YTickLabel = {'7','6','5','4','3','2','1','0','1','2','3','4','5','6','7'};
+
+
 set(gcf,'color','w');
 
