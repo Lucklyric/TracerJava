@@ -5,7 +5,7 @@
 %samples(1:AB,2:AC,3:BC,4:BA,5:CA,6:CB)
 %
 %draw Samples Figure (Distance Bar)
-drawSamplesFigure;
+%drawSamplesFigure;
 %draw DistanceCircle
 drawDistanceCircle(sample1,sample2,sample3,sample4,sample5,sample6);
 
