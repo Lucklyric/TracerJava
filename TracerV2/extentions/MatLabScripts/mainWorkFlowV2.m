@@ -4,6 +4,7 @@
 %originalPoints(1:A,2:B,3:C)
 %samples(1:AB,2:AC,3:BC,4:BA,5:CA,6:CB)
 %
+%
 %draw Samples Figure (Distance Bar)
 %drawSamplesFigure;
 %draw DistanceCircle
