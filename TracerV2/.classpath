@@ -2,10 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/AlvinSun/Documents/Alvin/Code/TracerJava/JSAT_r754.jar"/>
-	<classpathentry kind="lib" path="/Users/AlvinSun/Documents/Alvin/Code/TracerJava/Rserve.jar"/>
-	<classpathentry kind="lib" path="/Users/AlvinSun/Documents/Alvin/Code/TracerJava/Rsession.jar"/>
-	<classpathentry kind="lib" path="/Users/AlvinSun/Documents/Alvin/Code/TracerJava/REngine.jar"/>
-	<classpathentry kind="lib" path="/Users/AlvinSun/Documents/Alvin/Code/TracerJava/matlabcontrol-4.1.0.jar"/>
+	<classpathentry kind="lib" path="D:/Code/TracerJava/JSAT_r754.jar"/>
+	<classpathentry kind="lib" path="D:/Code/TracerJava/matlabcontrol-4.1.0.jar"/>
+	<classpathentry kind="lib" path="D:/Code/TracerJava/REngine.jar"/>
+	<classpathentry kind="lib" path="D:/Code/TracerJava/Rserve.jar"/>
+	<classpathentry kind="lib" path="D:/Code/TracerJava/Rsession.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
